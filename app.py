@@ -129,10 +129,6 @@ def main():
                        page_icon="https://i.ibb.co/XXrhT5P/protraitt.jpg")
     st.write(css, unsafe_allow_html=True)
 
-    st.write(
-        st.secrets["OPENAI_API_KEY"],
-    )
-
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
     if "chat_history" not in st.session_state:
@@ -140,6 +136,7 @@ def main():
 
     st.header("Chat with candidate Ping Hsien Yang 👨‍💻")
     user_question = st.text_input(""" Ask Ping Hsien Yang's resume includes being a unicorn whisperer, a professional cookie taster or a professional Data analyst? 🦄🍪👨‍🔧""")
+
     if user_question:
         handle_userinput(user_question)
 

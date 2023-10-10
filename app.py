@@ -134,7 +134,8 @@ def main():
         st.session_state.chat_history = None
 
     st.header("Chat with candidate Ping Hsien Yang 👨‍💻")
-    user_question = st.text_input(""" Ask Ping Hsien Yang's resume includes being a unicorn whisperer, a professional cookie taster or a professional Data analyst? 🦄🍪👨‍🔧""")
+    st.markdown('<span style="font-size:12px"><i>This Chat engine by GPT-3.5</span>', unsafe_allow_html=True)
+    user_question = st.text_input(""" Ask Ping Hsien Yang's resume if he can be a unicorn whispering, cookie tasting, or data analyst? 🦄🍪👨‍🔧""")
 
     if user_question:
         handle_userinput(user_question)

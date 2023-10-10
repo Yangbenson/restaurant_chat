@@ -124,7 +124,7 @@ def handle_userinput(user_question):
 
 def main():
     # load_dotenv()
-    st.set_page_config(page_title="Chat with Resume",
+    st.set_page_config(page_title="Ping Hsien Yang's Portfolio",
                        page_icon="https://i.ibb.co/XXrhT5P/protraitt.jpg")
     st.write(ChatUI.css, unsafe_allow_html=True)
 
@@ -133,13 +133,12 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
-    st.header("Chat with candidate Ping Hsien Yang 👨‍💻")
+    st.header("Chat with Ping's Resume👨‍💻")
     st.markdown('<span style="font-size:12px"><i>This Chat engine by GPT-3.5</span>', unsafe_allow_html=True)
     user_question = st.text_input(""" Ask Ping Hsien Yang's resume if he can be a unicorn whispering, cookie tasting, or data analyst? 🦄🍪👨‍🔧""")
 
     if user_question:
         handle_userinput(user_question)
-
 
     with st.sidebar:
 
@@ -163,6 +162,7 @@ def main():
 
         with st.expander("Expand Resume", expanded=True):
             st.write(benson_resume)
+
         # get the text chunks
         text_chunks = get_text_chunks(benson_resume)
 

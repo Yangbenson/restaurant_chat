@@ -158,7 +158,7 @@ def main():
         st.sidebar.write("------------------------")
 
         st.markdown('<h1 style="font-size:2em;">Ping Hsien Yang\'s Resume</h1>', unsafe_allow_html=True)
-        st.sidebar.markdown("[View Resume PDF](https://i.ibb.co/TTjMGJr/Ping-Hsien-Resume.jpg)")
+        st.sidebar.markdown("[Download Resume PDF](https://drive.google.com/file/d/1j-BvvDxjOrhxorORx71gGJv_fW950zBG/view)")
 
         with st.expander("Expand Resume", expanded=True):
             st.write(benson_resume)

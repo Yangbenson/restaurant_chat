@@ -9,12 +9,11 @@ from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
-from htmlTemplates import css, bot_template, user_template
+from htmlTemplates import ChatUI
 from langchain.llms import HuggingFaceHub
 
 benson_resume = """
 Benson (Ping Hsien) Yang\n
-bensonyang0326@gmail.com	424-527-4684
 
 EXPERIENCE
 
@@ -116,10 +115,10 @@ def handle_userinput(user_question):
 
     for i, message in enumerate(st.session_state.chat_history):
         if i % 2 == 0:
-            st.write(user_template.replace(
+            st.write(ChatUI.user_template.replace(
                 "{{MSG}}", message.content), unsafe_allow_html=True)
         else:
-            st.write(bot_template.replace(
+            st.write(ChatUI.bot_template.replace(
                 "{{MSG}}", message.content), unsafe_allow_html=True)
 
 
@@ -127,7 +126,7 @@ def main():
     # load_dotenv()
     st.set_page_config(page_title="Chat with Resume",
                        page_icon="https://i.ibb.co/XXrhT5P/protraitt.jpg")
-    st.write(css, unsafe_allow_html=True)
+    st.write(ChatUI.css, unsafe_allow_html=True)
 
     if "conversation" not in st.session_state:
         st.session_state.conversation = None
@@ -140,22 +139,41 @@ def main():
     if user_question:
         handle_userinput(user_question)
 
+
     with st.sidebar:
-        st.subheader("Ping Hsien Yang's Resume")
-        if st.button("Begin Chat"):
-            with st.spinner("Just a moment, Please"):
-                # get the text chunks
-                text_chunks = get_text_chunks(benson_resume)
 
-                # create vector store
-                vectorstore = get_vectorstore(text_chunks)
+        st.sidebar.markdown(
+            '<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.css">',
+            unsafe_allow_html=True)
 
-                # create conversation chain
-                st.session_state.conversation = get_conversation_chain(
-                    vectorstore)
-                # print(get_conversation_chain(vectorstore))
+        # 創建一個包含所有三個連結的HTML片段
+        icons_html = f'''
+        <div>{ChatUI.linkedin_link}
+            {ChatUI.github_link}
+            {ChatUI.email_link}</div>
+        '''
+        # 在側邊欄中顯示圖標
+        st.sidebar.markdown(icons_html, unsafe_allow_html=True)
 
-        st.write(benson_resume)
+        st.sidebar.write("------------------------")
+
+        st.markdown('<h1 style="font-size:2em;">Ping Hsien Yang\'s Resume</h1>', unsafe_allow_html=True)
+        st.sidebar.markdown("[View Resume PDF](https://i.ibb.co/TTjMGJr/Ping-Hsien-Resume.jpg)")
+
+        with st.expander("Expand Resume", expanded=True):
+            st.write(benson_resume)
+        # get the text chunks
+        text_chunks = get_text_chunks(benson_resume)
+
+        # create vector store
+        vectorstore = get_vectorstore(text_chunks)
+
+        # create conversation chain
+        st.session_state.conversation = get_conversation_chain(
+            vectorstore)
+        # print(get_conversation_chain(vectorstore))
+
+        # st.write(benson_resume)
 
 
 if __name__ == '__main__':

@@ -9,63 +9,12 @@ from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
+
+import get_restaurant
 from htmlTemplates import ChatUI
 from langchain.llms import HuggingFaceHub
+from get_restaurant import *
 
-benson_resume = """
-Benson (Ping Hsien) Yang\n
-
-EXPERIENCE
-
-Market Analyst | Python, SQL\n
-ARCADIA MOTOR CO., LTD. | Taipei, Taiwan
- 
-
-June 2020 - August 2021
- 
-•	Extracted key metrics from SQL databasesPerformed advanced analysis using Python, leading to the identification of emerging market trends and insights into user behavior, resulting in a 15% increase in marketing efficiency\n
-•	Work closely with cross-functional teams, including sales, product, and technology teams, to ensure accuracy and viability of market insights and make data-based strategic recommendations to drive business growth.
- 
-Software Engineer | VB, Javascript, MYSQL\n
-ChainSea Information Integration Co., Ltd | Taipei, Taiwan
- 
-September 2018 - September 2019
- 
-•	Performed proactive and ad-hoc product analyses to identify key customer needs and create cyber security through new product features.\n
-•	Reviewed, modified, and implemented A/B tests for unit and integration assessments to enhance the Bank's software quality and reliability.
-
-EDUCATION
- 
-August 2022 - May 2024
-
-Master of Science in Business Analytics\n
-Hofstra University | Hempstead,NY\n
-•	GPA : 4.0, Graduate Excellence Award Recipient
-
-August 2016 - May 2020\n
-
-Bachelor in Information Management\n
-National Taipei University of Business | Taipei, Taiwan
-
-PROJECTS
-
-Quantium Virtual Project from Forage| R, Tableau	August 2023 - August 2023\n
-Conducted advanced data analysis on transaction and purchase behavior data. Utilized tools Tableau and R for data visualization, statistical modeling, and data processing, producing clear and concise reports for Quantium.\n
-
-Slide Assistant by Open AI| Python, MySQL	June 2023 - August 2023\n
-Utilized Python programming and the latest GPT model, designed innovative and user-friendly presentation scripts that generate interfaces and help users improve their presentations.\n
-
-E-commercial Website Scraping and Analysis | Python, MySQL	August 2022 - November 2022\n
-Used Python to collect data on the website and inserted it into a database built on the AWS EC2 server, analyzed each dataset's correlation, and visualized it in several charts. Finally, used LSTM Neural Networks to predict the market.
-
-KEY SKILLS
-
-Software / Programming: Python, R, Matlab, Swift, EXCEL\n
-Data Stack: SQL, Tableau, GCP, AWS\n
-Python Packages: Pandas, NumPy, Matplotlib, scikit-learn, Tensorflow, GPT\n
-Machine Learning Models: Linear/Logistic Regression, Decision Trees, Random Forest, Extra Trees, k-Means Clusters, K-Nearest Neighbors, Neural Networks ( LSTM, CNNs ), NLP model\n
-
-"""
 
 def get_pdf_text(pdf_docs):
     text = ""
@@ -157,14 +106,17 @@ def main():
 
         st.sidebar.write("------------------------")
 
+        restaurant_name = get_restaurant.get_location()
+        ip_text = f"<h1>{restaurant_name}</h1>"
+        st.markdown(ip_text, unsafe_allow_html=True)
         st.markdown('<h1 style="font-size:2em;">Ping Hsien Yang\'s Resume</h1>', unsafe_allow_html=True)
         st.sidebar.markdown("[Download Resume](https://drive.google.com/file/d/1j-BvvDxjOrhxorORx71gGJv_fW950zBG/view)")
 
         with st.expander("Expand Resume", expanded=True):
-            st.write(benson_resume)
+            st.write(ChatUI.resume4gpt)
 
         # get the text chunks
-        text_chunks = get_text_chunks(benson_resume)
+        text_chunks = get_text_chunks(ChatUI.resume4gpt)
 
         # create vector store
         vectorstore = get_vectorstore(text_chunks)
@@ -173,8 +125,6 @@ def main():
         st.session_state.conversation = get_conversation_chain(
             vectorstore)
         # print(get_conversation_chain(vectorstore))
-
-        # st.write(benson_resume)
 
 
 if __name__ == '__main__':

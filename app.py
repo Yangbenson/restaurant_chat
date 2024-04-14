@@ -106,9 +106,9 @@ def main():
 
         st.sidebar.write("------------------------")
 
-        restaurant_name = get_restaurant.get_location()
-        ip_text = f"<h1>{restaurant_name}</h1>"
-        st.markdown(ip_text, unsafe_allow_html=True)
+        # restaurant_name = get_restaurant.get_location()
+        # ip_text = f"<h1>{restaurant_name}</h1>"
+        # st.markdown(ip_text, unsafe_allow_html=True)
         st.markdown('<h1 style="font-size:2em;">Ping Hsien Yang\'s Resume</h1>', unsafe_allow_html=True)
         st.sidebar.markdown("[Download Resume](https://drive.google.com/file/d/1j-BvvDxjOrhxorORx71gGJv_fW950zBG/view)")
 

@@ -1,6 +1,7 @@
 from io import BytesIO
 import os
 import streamlit as st
+from streamlit_js_eval import streamlit_js_eval, get_geolocation
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
@@ -109,6 +110,9 @@ def main():
         # restaurant_name = get_restaurant.get_location()
         # ip_text = f"<h1>{restaurant_name}</h1>"
         # st.markdown(ip_text, unsafe_allow_html=True)
+        if st.checkbox("Check my location"):
+            loc = get_geolocation()
+            st.write(f"Your coordinates are {loc}")
         st.markdown('<h1 style="font-size:2em;">Ping Hsien Yang\'s Resume</h1>', unsafe_allow_html=True)
         st.sidebar.markdown("[Download Resume](https://drive.google.com/file/d/1j-BvvDxjOrhxorORx71gGJv_fW950zBG/view)")
 

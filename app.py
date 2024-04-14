@@ -106,8 +106,9 @@ def main():
         st.sidebar.write("------------------------")
 
         # if st.checkbox("Check my location"):
-        #     loc = get_geolocation()
-        #     st.write(f"Your coordinates are {loc}")
+        loc = get_geolocation()
+        loc_string = f"{loc['coords']['latitude']}, {loc['coords']['longitude']}"
+        st.write(loc_string)
         st.markdown('<h1 style="font-size:2em;">Ping Hsien Yang\'s Resume</h1>', unsafe_allow_html=True)
         st.sidebar.markdown("[Download Resume](https://drive.google.com/file/d/1j-BvvDxjOrhxorORx71gGJv_fW950zBG/view)")
 

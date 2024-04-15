@@ -73,7 +73,8 @@ def handle_userinput(user_question):
 def main():
     # load_dotenv()
     st.set_page_config(page_title="Ping Hsien Yang's Portfolio",
-                       page_icon="https://i.ibb.co/XXrhT5P/protraitt.jpg")
+                       page_icon="https://i.ibb.co/n74nyd7/restaurant.png")
+
     st.write(ChatUI.css, unsafe_allow_html=True)
 
     if "conversation" not in st.session_state:
@@ -105,15 +106,15 @@ def main():
 
         st.sidebar.write("------------------------")
 
-        # if st.checkbox("Check my location"):
         loc = get_geolocation()
         loc_string = f"{loc['coords']['latitude']}, {loc['coords']['longitude']}"
         st.write(loc_string)
-        st.markdown('<h1 style="font-size:2em;">Ping Hsien Yang\'s Resume</h1>', unsafe_allow_html=True)
-        st.sidebar.markdown("[Download Resume](https://drive.google.com/file/d/1j-BvvDxjOrhxorORx71gGJv_fW950zBG/view)")
 
-        with st.expander("Expand Resume", expanded=True):
-            st.write(ChatUI.resume4gpt)
+        # st.markdown('<h1 style="font-size:2em;">Ping Hsien Yang\'s Resume</h1>', unsafe_allow_html=True)
+        # st.sidebar.markdown("[Download Resume](https://drive.google.com/file/d/1j-BvvDxjOrhxorORx71gGJv_fW950zBG/view)")
+
+        # with st.expander("Expand Resume", expanded=True):
+            # st.write(ChatUI.resume4gpt)
 
         # get the text chunks
         text_chunks = get_text_chunks(ChatUI.resume4gpt)

@@ -1,6 +1,10 @@
 from io import BytesIO
 import os
+
+import langchain_openai
 import streamlit as st
+import asyncio
+import threading
 from streamlit_js_eval import streamlit_js_eval, get_geolocation
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
@@ -8,12 +12,16 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
+from langchain_openai import OpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import ChatUI
 from langchain.llms import HuggingFaceHub
 from get_restaurant import *
 
+
+
+loc_string = ""
 
 def get_pdf_text(pdf_docs):
     text = ""
@@ -36,6 +44,7 @@ def get_text_chunks(text):
 
 
 def get_vectorstore(text_chunks):
+
     embeddings = OpenAIEmbeddings(openai_api_key=os.environ["OPENAI_API_KEY"])
     # embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
@@ -44,7 +53,8 @@ def get_vectorstore(text_chunks):
 
 def get_conversation_chain(vectorstore):
 
-    llm = ChatOpenAI(model_name="gpt-3.5-turbo-16k", openai_api_key=os.environ["OPENAI_API_KEY"])
+    # llm = ChatOpenAI(model_name="gpt-3.5-turbo-0125", openai_api_key=os.environ["OPENAI_API_KEY"])
+    llm = ChatOpenAI(model_name="gpt-4-turbo", openai_api_key=os.environ["OPENAI_API_KEY"])
     # llm = HuggingFaceHub(repo/_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
 
     memory = ConversationBufferMemory(
@@ -56,12 +66,18 @@ def get_conversation_chain(vectorstore):
     )
     return conversation_chain
 
-
 def handle_userinput(user_question):
+
     response = st.session_state.conversation({'question': user_question})
     st.session_state.chat_history = response['chat_history']
 
     for i, message in enumerate(st.session_state.chat_history):
+
+        # if i == 0:
+        #     search_result = search(user_question,loc_string)
+        #     st.write("Search result:",search_result)
+        #
+        # 根据 i 的奇偶性决定使用哪个模板
         if i % 2 == 0:
             st.write(ChatUI.user_template.replace(
                 "{{MSG}}", message.content), unsafe_allow_html=True)
@@ -69,9 +85,17 @@ def handle_userinput(user_question):
             st.write(ChatUI.bot_template.replace(
                 "{{MSG}}", message.content), unsafe_allow_html=True)
 
+def fetch_location():
+
+    loc = get_geolocation()
+    loc_string = f"{loc['coords']['latitude']}, {loc['coords']['longitude']}"
+    st.session_state['location'] = loc_string
+
+    return loc_string
+
 
 def main():
-    # load_dotenv()
+
     st.set_page_config(page_title="Ping Hsien Yang's Portfolio",
                        page_icon="https://i.ibb.co/n74nyd7/restaurant.png")
 
@@ -82,9 +106,9 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
-    st.header("Chat with Ping's Resume👨‍💻")
+    st.header("Restaurant Chat")
     st.markdown('<span style="font-size:12px"><i>This Chat engine by GPT-3.5</span>', unsafe_allow_html=True)
-    user_question = st.text_input(""" Ask Ping Hsien Yang's resume if he can be a unicorn whispering, cookie tasting, or data analyst? 🦄🍪👨‍🔧""")
+    user_question = st.text_input(""" Enter a country to see its restaurants:""")
 
     if user_question:
         handle_userinput(user_question)
@@ -106,27 +130,41 @@ def main():
 
         st.sidebar.write("------------------------")
 
-        loc = get_geolocation()
-        loc_string = f"{loc['coords']['latitude']}, {loc['coords']['longitude']}"
-        st.write(loc_string)
-
         # st.markdown('<h1 style="font-size:2em;">Ping Hsien Yang\'s Resume</h1>', unsafe_allow_html=True)
         # st.sidebar.markdown("[Download Resume](https://drive.google.com/file/d/1j-BvvDxjOrhxorORx71gGJv_fW950zBG/view)")
+
+
+        # When the checkbox is clicked, start fetching the location
+        if st.checkbox("Check my location"):
+            loc_string =  fetch_location()
+            st.write(st.session_state['location'])
+
 
         # with st.expander("Expand Resume", expanded=True):
             # st.write(ChatUI.resume4gpt)
 
-        # get the text chunks
-        text_chunks = get_text_chunks(ChatUI.resume4gpt)
+        country = st.text_input("Enter a country to see its restaurants:")
 
-        # create vector store
-        vectorstore = get_vectorstore(text_chunks)
+        if country:
 
-        # create conversation chain
-        st.session_state.conversation = get_conversation_chain(
-            vectorstore)
-        # print(get_conversation_chain(vectorstore))
+            search_result = search(f"{country} restaurant", loc_string)
+            print(f"{search_result} \n, {loc_string} ")
+            # st.write("Search result:", search_result)
 
+            # get the text chunks
+            # text_chunks = get_text_chunks(ChatUI.resume4gpt)
+
+            # get prompt data
+            text = search_result['gpt_prompt'].tolist()
+            print(text)
+            # create vector store
+            vectorstore = get_vectorstore(text)
+
+            # create conversation chain
+            st.session_state.conversation = get_conversation_chain(
+                vectorstore)
+
+            print(country)
 
 if __name__ == '__main__':
     main()
